@@ -1,0 +1,106 @@
+{
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/app",
+  "projectType": "application",
+  "targets": {
+    "build": {
+      "executor": "@nrwl/next:build",
+      "outputs": [
+        "{options.outputPath}"
+      ],
+      "defaultConfiguration": "production",
+      "options": {
+        "root": "packages/app",
+        "outputPath": "dist/packages/app"
+      },
+      "configurations": {
+        "development": {
+          "outputPath": "packages/app"
+        },
+        "production": {}
+      },
+      "dependsOn": [
+        "build-custom-server"
+      ]
+    },
+    "serve": {
+      "executor": "@nrwl/next:server",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "app:build",
+        "dev": true,
+        "customServerTarget": "app:serve-custom-server"
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "app:build:development",
+          "dev": true,
+          "customServerTarget": "app:serve-custom-server:development"
+        },
+        "production": {
+          "buildTarget": "app:build:production",
+          "dev": false,
+          "customServerTarget": "app:serve-custom-server:production"
+        }
+      }
+    },
+    "export": {
+      "executor": "@nrwl/next:export",
+      "options": {
+        "buildTarget": "app:build:production"
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": [
+        "coverage/packages/app"
+      ],
+      "options": {
+        "jestConfig": "packages/app/jest.config.ts",
+        "passWithNoTests": true
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": [
+        "{options.outputFile}"
+      ],
+      "options": {
+        "lintFilePatterns": [
+          "packages/app/**/*.{ts,tsx,js,jsx}"
+        ]
+      }
+    },
+    "build-custom-server": {
+      "executor": "@nrwl/js:tsc",
+      "defaultConfiguration": "production",
+      "options": {
+        "outputPath": "dist/packages/app",
+        "main": "packages/app/server/main.ts",
+        "tsConfig": "packages/app/tsconfig.server.json",
+        "clean": false,
+        "assets": []
+      },
+      "configurations": {
+        "development": {},
+        "production": {}
+      }
+    },
+    "serve-custom-server": {
+      "executor": "@nrwl/js:node",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "app:build-custom-server"
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "app:build-custom-server:development"
+        },
+        "production": {
+          "buildTarget": "app:build-custom-server:production"
+        }
+      }
+    }
+  },
+  "tags": []
+}
